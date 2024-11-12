@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "dma.h"
 #include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
@@ -27,6 +26,9 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
+#include "MPU6050_platform.h"
+#include "MPU6050_registermap.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,11 +92,15 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  MPU6050_t IMU;
+  IMU.dev_address = 0x68;
+  IMU.i2c_hanlde = &hi2c1;
+  uint8_t addr_read = 0;
+  char printBuff[100];
+  uint8_t status = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,6 +110,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  status |= RdByte(&IMU, WHO_AM_I ,&addr_read);
+	  sprintf(printBuff, "IMU Address: %u \n\r", addr_read);
+	  HAL_UART_Transmit(&huart2, (uint8_t*)printBuff, strlen(printBuff) ,100);
+	  HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }

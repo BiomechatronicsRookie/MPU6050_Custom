@@ -8,6 +8,8 @@
 #ifndef INC_MPU6050_MPU6050_ERRORCODES_H_
 #define INC_MPU6050_MPU6050_ERRORCODES_H_
 
+#include <stdint.h>
+
 typedef uint8_t MPU_ERROR;
 
 
