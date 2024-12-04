@@ -1,11 +1,9 @@
 /*
- * registermap.h
+ * Author: 		Victo Carmona Ortiz / @BiomechatronicsRookie (github)
+ * Date: 		12/10/2024 (DD-MM-YYYY)
  *
- *  Created on: Oct 6, 2024
- *      Author: Victor
- *      Register map for the MPU6050
+ * Description: low level i2c data read functions to work with MPU6050
  */
-
 #ifndef MPU6000_REGISTER_MAP_H
 #define MPU6000_REGISTER_MAP_H
 

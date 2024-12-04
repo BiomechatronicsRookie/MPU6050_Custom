@@ -26,6 +26,8 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include "MPU6050_platform.h"
 #include "MPU6050_registermap.h"
 
@@ -49,7 +51,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+  volatile int16_t AccGyrBuff[6] = {12, 22, 48, 59, 0, 32};
+  uint8_t interr = 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,6 +74,11 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+  // Variable definition
+  char printBuff[100];
+  uint8_t status = 0;
+  size_t buffSize = sizeof(AccGyrBuff) / sizeof(AccGyrBuff[0]);
+  float AccX, AccY, AccZ= 0;
 
   /* USER CODE END 1 */
 
@@ -96,11 +104,10 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   MPU6050_t IMU;
-  IMU.dev_address = 0x68;
+  IMU.dev_address = 0x68 << 1;
   IMU.i2c_hanlde = &hi2c1;
-  uint8_t addr_read = 0;
-  char printBuff[100];
-  uint8_t status = 0;
+  IMU_Init(&IMU);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -110,10 +117,17 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  status |= RdByte(&IMU, WHO_AM_I ,&addr_read);
-	  sprintf(printBuff, "IMU Address: %u \n\r", addr_read);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)printBuff, strlen(printBuff) ,100);
-	  HAL_Delay(500);
+	  if (interr){
+		  interr = 0;
+		  ClearInterrupt(&IMU);
+		  status |= ReadAll(&IMU, &AccGyrBuff, buffSize);
+		  AccX = AccGyrBuff[0]/16384.0f;
+		  AccY = AccGyrBuff[1]/16384.0f;
+		  AccZ = AccGyrBuff[2]/16384.0f;
+		  snprintf(printBuff, sizeof(printBuff), "Acc X: %.3f\t Acc Y: %.3f\t  Acc Z: %.3f\r\n", AccX, AccY, AccZ);
+		  HAL_UART_Transmit(&huart2, (uint8_t*)printBuff, strlen(printBuff) ,HAL_MAX_DELAY);
+	  };
+
   }
   /* USER CODE END 3 */
 }
@@ -166,7 +180,13 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if(GPIO_Pin == GPIO_PIN_7) {
+    //HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, GPIO_PIN_SET);
+    interr = 1;
+  }
+}
 /* USER CODE END 4 */
 
 /**

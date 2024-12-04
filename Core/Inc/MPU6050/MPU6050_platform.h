@@ -1,11 +1,12 @@
 /*
- * readwrite.h
+ * Author: 		Victo Carmona Ortiz / @BiomechatronicsRookie (github)
+ * Date: 		12/10/2024 (DD-MM-YYYY)
  *
- *  Created on: Oct 6, 2024
- *      Author: vicar
+ * Description: low level i2c data read functions to work with MPU6050
  */
-#ifndef INC_READWRITE_H_
-#define INC_READWRITE_H_
+
+#ifndef PLTFRM_H_
+#define PLTFRM_H_
 
 #include <stdint.h>
 #include "MPU6050_errorcodes.h"
@@ -17,7 +18,11 @@ typedef struct device{
 }MPU6050_t;
 
 
-int RdByte(MPU6050_t* dev, uint16_t memAdd, uint8_t* buff);
+uint8_t RdByte(MPU6050_t* dev, uint8_t memAdd, uint8_t* buff);
+
+uint8_t WrtByte(MPU6050_t* dev, uint8_t memAdd, uint8_t* buff);
+
+uint8_t RdWord(MPU6050_t* dev, uint8_t memAdd_L, int16_t* buff);
 
 
 #endif /* INC_READWRITE_H_ */
