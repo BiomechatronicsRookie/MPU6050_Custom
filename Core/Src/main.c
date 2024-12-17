@@ -30,6 +30,7 @@
 #include <inttypes.h>
 #include "MPU6050_platform.h"
 #include "MPU6050_registermap.h"
+#include "MPU6050_api.h"
 
 /* USER CODE END Includes */
 
@@ -51,7 +52,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-  volatile int16_t AccGyrBuff[6] = {12, 22, 48, 59, 0, 32};
   uint8_t interr = 1;
 /* USER CODE END PV */
 
@@ -75,10 +75,11 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
   // Variable definition
-  char printBuff[100];
+  char printBuff[200];
+  int16_t AllBuffer[7] = {0};
   uint8_t status = 0;
-  size_t buffSize = sizeof(AccGyrBuff) / sizeof(AccGyrBuff[0]);
-  float AccX, AccY, AccZ= 0;
+  size_t buffSize = sizeof(AllBuffer) / sizeof(AllBuffer[0]);
+  float AccX, AccY, AccZ, GyrX, GyrY, GyrZ, Temp;
 
   /* USER CODE END 1 */
 
@@ -104,9 +105,11 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   MPU6050_t IMU;
+  MPU6050_t_cfg CFG;
+  CFG.fifo_en = 0;
   IMU.dev_address = 0x68 << 1;
   IMU.i2c_hanlde = &hi2c1;
-  IMU_Init(&IMU);
+  IMU_Init(&IMU, CFG);
 
   /* USER CODE END 2 */
 
@@ -120,11 +123,18 @@ int main(void)
 	  if (interr){
 		  interr = 0;
 		  ClearInterrupt(&IMU);
-		  status |= ReadAll(&IMU, &AccGyrBuff, buffSize);
-		  AccX = AccGyrBuff[0]/16384.0f;
-		  AccY = AccGyrBuff[1]/16384.0f;
-		  AccZ = AccGyrBuff[2]/16384.0f;
-		  snprintf(printBuff, sizeof(printBuff), "Acc X: %.3f\t Acc Y: %.3f\t  Acc Z: %.3f\r\n", AccX, AccY, AccZ);
+		  status |= ReadAll(&IMU, AllBuffer, buffSize);
+		  AccX = AllBuffer[0]/16384.0f;
+		  AccY = AllBuffer[1]/16384.0f;
+		  AccZ = AllBuffer[2]/16384.0f;
+		  Temp = AllBuffer[3]/340.0f + 36.53;
+		  GyrX = AllBuffer[4]/131.0f;
+		  GyrY = AllBuffer[5]/131.0f;
+		  GyrZ = AllBuffer[6]/131.0f;
+
+
+		  snprintf(printBuff, sizeof(printBuff), "Acc X: %.3f \t Acc Y: %.3f \t  Acc Z: %.3f \t Gyr X: %.3f \t Gyr Y: %.3f\t  Gyr Z: %.3f \t Temp: %.3f \r\n"\
+				  , AccX, AccY, AccZ, GyrX, GyrY, GyrZ, Temp);
 		  HAL_UART_Transmit(&huart2, (uint8_t*)printBuff, strlen(printBuff) ,HAL_MAX_DELAY);
 	  };
 

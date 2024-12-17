@@ -17,12 +17,21 @@ typedef struct device{
 	uint16_t dev_address;
 }MPU6050_t;
 
+typedef struct device_cfg{
+	uint8_t fifo_en;
+}MPU6050_t_cfg;
+
+
 
 uint8_t RdByte(MPU6050_t* dev, uint8_t memAdd, uint8_t* buff);
 
 uint8_t WrtByte(MPU6050_t* dev, uint8_t memAdd, uint8_t* buff);
 
 uint8_t RdWord(MPU6050_t* dev, uint8_t memAdd_L, int16_t* buff);
+
+uint8_t BurstRead(MPU6050_t* dev, uint8_t memAdd_L, int16_t* buff, uint8_t buffLen, uint8_t Delay);
+
+uint8_t FifoRead(MPU6050_t* dev, int16_t* buff, uint8_t fifoBuffLen);
 
 
 #endif /* INC_READWRITE_H_ */

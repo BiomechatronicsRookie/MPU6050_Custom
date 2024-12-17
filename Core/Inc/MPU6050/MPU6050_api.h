@@ -12,21 +12,23 @@
 #include <stdint.h>
 #include <MPU6050_platform.h>
 
-void IMU_Init(MPU6050_t* dev);
+void IMU_Init(MPU6050_t* dev, MPU6050_t_cfg config);
 
-int ReadAccX(MPU6050_t* dev, int16_t* buff);
+uint8_t ReadAccX(MPU6050_t* dev, int16_t* buff);
 
-int ReadAccY(MPU6050_t* dev, int16_t* buff);
+uint8_t ReadAccY(MPU6050_t* dev, int16_t* buff);
 
-int ReadAccZ(MPU6050_t* dev, int16_t* buff);
+uint8_t ReadAccZ(MPU6050_t* dev, int16_t* buff);
 
-int ReadGyrX(MPU6050_t* dev, int16_t* buff);
+uint8_t ReadGyrX(MPU6050_t* dev, int16_t* buff);
 
-int ReadGyrY(MPU6050_t* dev, int16_t* buff);
+uint8_t ReadGyrY(MPU6050_t* dev, int16_t* buff);
 
-int ReadGyrZ(MPU6050_t* dev, int16_t* buff);
+uint8_t ReadGyrZ(MPU6050_t* dev, int16_t* buff);
 
-int ReadAll(MPU6050_t* dev, int16_t *buff, size_t buffSize);
+uint8_t ReadAllSimple(MPU6050_t* dev, int16_t* buff, size_t buffSize);
+
+uint8_t ReadAll(MPU6050_t* dev, int16_t buff[], size_t buffLen);
 
 int ClearInterrupt(MPU6050_t* dev);
 
